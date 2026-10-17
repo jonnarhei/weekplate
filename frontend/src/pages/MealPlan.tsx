@@ -140,7 +140,7 @@ function MealPlanPage() {
         try {
             setMyRecipes(await getRecipes() ?? [])
         } catch (err) {
-            toast.error('Failed to load your recieps')
+            toast.error('Failed to load your recipes')
             setMyRecipes([])
         } finally {
             setLoadingRecipes(false)

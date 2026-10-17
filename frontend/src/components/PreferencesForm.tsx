@@ -1,5 +1,4 @@
 import { useState } from "react"
-import toast from "react-hot-toast"
 import { DIETARY_OPTIONS, INTOLERANCE_OPTIONS } from "../api/types"
 
 export type Preferences = {
@@ -23,6 +22,7 @@ const toggle = (list: string[], option: string) =>
 
 function PreferencesForm({ value, onChange, variant = 'profile' }: Props) {
     const [ingredientInput, setIngredientInput] = useState('')
+    const [duplicate, setDuplicate] = useState(false)
 
     const onboarding = variant === 'onboarding'
 
@@ -30,7 +30,7 @@ function PreferencesForm({ value, onChange, variant = 'profile' }: Props) {
         const trimmed = ingredientInput.trim().toLowerCase()
         if (!trimmed) return
         if (value.excluded.includes(trimmed)) {
-            toast.error('Already added')
+            setDuplicate(true)
             return
         }
         onChange({ ...value, excluded: [...value.excluded, trimmed] })
@@ -103,7 +103,7 @@ function PreferencesForm({ value, onChange, variant = 'profile' }: Props) {
                         type="text"
                         placeholder="e.g. mushrooms"
                         value={ingredientInput}
-                        onChange={e => setIngredientInput(e.target.value)}
+                        onChange={e => { setIngredientInput(e.target.value); setDuplicate(false) }}
                         onKeyDown={e => {
                             if (e.key === 'Enter') {
                                 e.preventDefault()
@@ -120,6 +120,8 @@ function PreferencesForm({ value, onChange, variant = 'profile' }: Props) {
                         Add
                     </button>
                 </div>
+
+                {duplicate && <p className="text-[13px] text-red-600 -mt-1">Already in your list</p>}
 
                 {value.excluded.length > 0 && (
                     <div className="flex flex-wrap gap-2">
