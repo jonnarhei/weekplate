@@ -9,6 +9,7 @@ function ShoppingList() {
     const [loading, setLoading] = useState(true)
     const [addingFromPlan, setAddingFromPlan] = useState(false)
     const [newItem, setNewItem] = useState({ name: '', amount: '', unit: '' })
+    const [nameError, setNameError] = useState(false)
 
     useEffect(() => {
         const fetchItems = async () => {
@@ -71,8 +72,8 @@ function ShoppingList() {
     }
 
     const handleAddItem = async () => {
-        if (!newItem.name) {
-            toast.error('Item name is required')
+        if (!newItem.name.trim()) {
+            setNameError(true)
             return
         }
         try {
@@ -158,7 +159,8 @@ function ShoppingList() {
                     type="text"
                     placeholder="Add item"
                     value={newItem.name}
-                    onChange={e => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                    onChange={e => { setNewItem(prev => ({ ...prev, name: e.target.value })); setNameError(false) }}
+                    aria-invalid={nameError}
                     className="flex-1 min-w-0 border-none p-2.5 text-base outline-none"
                 />
                 <button
@@ -168,6 +170,7 @@ function ShoppingList() {
                     Add
                 </button>
             </form>
+            {nameError && <p className="text-[13px] text-red-600 -mt-1 mb-2 px-1">Enter an item name</p>}
 
             {toBuy.length === 0 ? nothingToBuy : toBuy.map(item => (
                 <div key={item.id} className="flex items-center border-b border-stone-100">
@@ -246,7 +249,8 @@ function ShoppingList() {
                         type="text"
                         placeholder="Add item"
                         value={newItem.name}
-                        onChange={e => setNewItem(prev => ({ ...prev, name: e.target.value }))}
+                        onChange={e => { setNewItem(prev => ({ ...prev, name: e.target.value })); setNameError(false) }}
+                        aria-invalid={nameError}
                         className="flex-1 min-w-0 border-none px-2.5 py-2 text-[15px] outline-none"
                     />
                     <input
@@ -272,6 +276,7 @@ function ShoppingList() {
                         Add
                     </button>
                 </form>
+                {nameError && <p className="text-[13px] text-red-600 -mt-1 mb-2 px-1">Enter an item name</p>}
 
                 {toBuy.length === 0 ? nothingToBuy : (
                     <div className="flex flex-col">

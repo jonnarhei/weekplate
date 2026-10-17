@@ -78,7 +78,6 @@ function RecipeForm() {
     const handleSubmit = async () => {
         if (!form.title.trim()) {
             setTitleError(true)
-            toast.error('Title is required')
             return
         }
 

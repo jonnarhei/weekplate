@@ -16,12 +16,10 @@ function Register() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        setLoading(true)
+        // The mismatch hint is already shown under the confirm field
+        if (password !== confirmPassword) return
 
-        if (password !== confirmPassword) {
-            toast.error('Passwords do not match')
-            return
-        }
+        setLoading(true)
 
         try {
             await register({ email, password })
