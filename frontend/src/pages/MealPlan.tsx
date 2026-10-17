@@ -3,7 +3,7 @@ import type { UserRecipe, MealPlan, MealPlanRecipe } from "../api/types"
 import { changeRecipeForDay, getCurrentMealPlan, regenerateMealPlan } from "../api/mealplan"
 import toast from "react-hot-toast"
 import { getRecipes } from "../api/recipes"
-import { useLocation, useNavigate, useParams } from "react-router-dom"
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom"
 import { useAppLayout } from "../components/AppLayout"
 import RecipeThumb from "../components/RecipeThumb"
 import EmptyState from "../components/EmptyState"
@@ -348,7 +348,14 @@ function MealPlanPage() {
                                 </div>
                             )}
 
-                            {mobileDay.source_url && (
+                            {mobileDay.source === 'user' && mobileDay.user_recipe_id !== null ? (
+                                <Link
+                                    to={`/recipes/${mobileDay.user_recipe_id}`}
+                                    className="w-fit py-2.5 text-sm font-semibold text-orange-700 hover:text-orange-800 transition-colors"
+                                >
+                                    View recipe
+                                </Link>
+                            ) : mobileDay.source_url && (
                                 <a
                                     href={mobileDay.source_url}
                                     target="_blank"
@@ -475,7 +482,14 @@ function MealPlanPage() {
                                 </div>
                             )}
 
-                            {selected.source_url && (
+                            {selected.source === 'user' && selected.user_recipe_id !== null ? (
+                                <Link
+                                    to={`/recipes/${selected.user_recipe_id}`}
+                                    className="w-fit text-sm font-semibold text-orange-700 hover:text-orange-800 transition-colors"
+                                >
+                                    View recipe
+                                </Link>
+                            ) : selected.source_url && (
                                 <a
                                     href={selected.source_url}
                                     target="_blank"

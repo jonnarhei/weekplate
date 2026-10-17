@@ -10,6 +10,7 @@ import DietaryPreferences from "./pages/Preferences"
 import ShoppingList from "./pages/ShoppingList"
 import MyRecipes from "./pages/MyRecipes"
 import RecipeForm from "./pages/RecipeForm"
+import RecipeView from "./pages/RecipeView"
 
 
 function App() {
@@ -38,24 +39,18 @@ function App() {
         <Route path="/shopping-list" element={<ShoppingList />} />
 
         <Route path="/recipes" element={<MyRecipes />} />
+
+        <Route path="/recipes/new" element={<RecipeForm />} />
+
+        <Route path="/recipes/:id" element={<RecipeView />} />
+
+        <Route path="/recipes/:id/edit" element={<RecipeForm />} />
       </Route>
 
       {/* Protected pages that render on their own */}
       <Route path="/dietary-preferences" element={
         <ProtectedRoute>
           <DietaryPreferences />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/recipes/new" element={
-        <ProtectedRoute>
-          <RecipeForm />
-        </ProtectedRoute>
-      } />
-
-      <Route path="/recipes/:id/edit" element={
-        <ProtectedRoute>
-          <RecipeForm />
         </ProtectedRoute>
       } />
     </Routes>

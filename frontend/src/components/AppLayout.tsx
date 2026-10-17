@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { NavLink, Outlet, useLocation, useNavigate, useOutletContext } from "react-router-dom"
+import { Link, NavLink, Outlet, useLocation, useNavigate, useOutletContext } from "react-router-dom"
 import toast from "react-hot-toast"
 import { useAuth } from "../context/AuthContext"
 import { getCurrentUser } from "../api/user"
@@ -10,6 +10,8 @@ export type AppLayoutContext = {
     userLoading: boolean
     setUser: React.Dispatch<React.SetStateAction<User | null>>
     setWeekLabel: (label: string | null) => void
+    /** Last breadcrumb segment for pages under Recipes, e.g. the title of the recipe being viewed. */
+    setCrumb: (label: string | null) => void
 }
 
 export function useAppLayout() {
@@ -22,7 +24,24 @@ const navItems = [
     { to: '/shopping-list', label: 'Shopping list' },
 ]
 
-const pageTitle = (pathname: string) => {
+const isRecipeForm = (pathname: string) => /^\/recipes\/(new|\d+\/edit)\/?$/.test(pathname)
+const isRecipeView = (pathname: string) => /^\/recipes\/\d+\/?$/.test(pathname)
+
+const pageTitle = (pathname: string, crumb: string | null): React.ReactNode => {
+    if (isRecipeForm(pathname) || isRecipeView(pathname)) return (
+        <span className="flex items-center gap-2.5 min-w-0">
+            <Link
+                to="/recipes"
+                className="text-stone-400 hover:text-stone-600 transition-colors rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+            >
+                Recipes
+            </Link>
+            <span className="text-stone-300 font-normal">/</span>
+            <span className="truncate">
+                {isRecipeView(pathname) ? (crumb ?? '') : pathname.endsWith('/new') ? 'New recipe' : 'Edit recipe'}
+            </span>
+        </span>
+    )
     if (pathname.startsWith('/meal-plan')) return 'Meal plan'
     if (pathname.startsWith('/recipes')) return 'Recipes'
     if (pathname.startsWith('/shopping-list')) return 'Shopping list'
@@ -38,6 +57,7 @@ function AppLayout() {
     const [user, setUser] = useState<User | null>(null)
     const [userLoading, setUserLoading] = useState(true)
     const [weekLabel, setWeekLabel] = useState<string | null>(null)
+    const [crumb, setCrumb] = useState<string | null>(null)
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -59,15 +79,18 @@ function AppLayout() {
     }
 
     const onProfile = pathname.startsWith('/profile')
+    // The recipe pages bring their own top area on mobile; the form also hides the tab bar
+    const fullBleedMobile = isRecipeForm(pathname) || isRecipeView(pathname)
+    const hideTabBar = isRecipeForm(pathname)
     const initial = user?.email?.[0]?.toUpperCase() ?? '·'
 
     return (
         <div className="h-dvh flex flex-col bg-white text-stone-900">
 
             <header className="hidden md:flex h-[68px] flex-none items-center justify-between px-7 bg-white border-b border-stone-200">
-                <div className="flex items-center gap-3.5">
-                    <span className="w-2.5 h-2.5 rounded-[3px] bg-orange-500" />
-                    <h1 className="text-[22px] font-bold tracking-[-0.01em]">{pageTitle(pathname)}</h1>
+                <div className="flex items-center gap-3.5 min-w-0">
+                    <span className="flex-none w-2.5 h-2.5 rounded-[3px] bg-orange-500" />
+                    <h1 className="min-w-0 text-[22px] font-bold tracking-[-0.01em]">{pageTitle(pathname, crumb)}</h1>
                 </div>
 
                 {weekLabel && (
@@ -92,7 +115,7 @@ function AppLayout() {
 
                 <button
                     onClick={() => navigate('/profile')}
-                    className={`flex items-center gap-2 text-sm rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300
+                    className={`flex-none flex items-center gap-2 text-sm rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300
                         ${onProfile
                             ? 'bg-stone-100 text-stone-900 font-semibold py-1 pl-1 pr-3.5'
                             : 'text-stone-700 py-1 pl-1 pr-3.5 hover:bg-stone-100'
@@ -131,13 +154,13 @@ function AppLayout() {
                     </button>
                 </aside>
 
-                <main className="flex-1 overflow-auto bg-white px-5 pt-7 pb-8 md:py-7 md:px-8">
-                    <Outlet context={{ user, userLoading, setUser, setWeekLabel } satisfies AppLayoutContext} />
+                <main className={`flex-1 overflow-auto bg-white md:py-7 md:px-8 ${fullBleedMobile ? '' : 'px-5 pt-7 pb-8'}`}>
+                    <Outlet context={{ user, userLoading, setUser, setWeekLabel, setCrumb } satisfies AppLayoutContext} />
                 </main>
             </div>
 
             {/* Mobile tab bar */}
-            <nav className="md:hidden flex-none grid grid-cols-3 bg-white border-t border-stone-200 px-2 pt-2 pb-[max(20px,env(safe-area-inset-bottom))]">
+            <nav className={`${hideTabBar ? 'hidden' : 'md:hidden grid'} flex-none grid-cols-3 bg-white border-t border-stone-200 px-2 pt-2 pb-[max(20px,env(safe-area-inset-bottom))]`}>
                 {navItems.map(item => (
                     <NavLink
                         key={item.to}
