@@ -58,7 +58,7 @@ func (app *application) mount() http.Handler {
 		AllowCredentials: true,
 	}))
 
-	//standard middleware stack from chi
+	// standard middleware stack from chi
 	router.Use(middleware.RequestID)
 	router.Use(middleware.RealIP)
 	router.Use(middleware.Logger)

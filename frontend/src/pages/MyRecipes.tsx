@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { UserRecipe } from "../api/types";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteRecipe, getRecipes } from "../api/recipes";
 import toast from "react-hot-toast";
 import RecipeThumb from "../components/RecipeThumb";
@@ -110,15 +110,20 @@ function MyRecipes() {
 
                     return (
                         <div key={recipe.id} className="flex items-center gap-3 py-2.5 border-b border-stone-100">
-                            <RecipeThumb
-                                src={recipe.image}
-                                alt=""
-                                className="w-12 h-12 flex-none rounded-[10px]"
-                            />
-                            <div className="flex-1 min-w-0 flex flex-col gap-0.5">
-                                <span className="text-[15px] font-semibold truncate">{recipe.title}</span>
-                                <span className="text-xs text-stone-500">{meta}</span>
-                            </div>
+                            <Link
+                                to={`/recipes/${recipe.id}`}
+                                className="flex-1 min-w-0 flex items-center gap-3 min-h-11 rounded-[10px] active:bg-orange-50 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+                            >
+                                <RecipeThumb
+                                    src={recipe.image}
+                                    alt=""
+                                    className="w-12 h-12 flex-none rounded-[10px]"
+                                />
+                                <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                                    <span className="text-[15px] font-semibold truncate">{recipe.title}</span>
+                                    <span className="text-xs text-stone-500">{meta}</span>
+                                </div>
+                            </Link>
                             <div className="flex-none flex">
                                 <button
                                     onClick={() => navigate(`/recipes/${recipe.id}/edit`)}
@@ -159,14 +164,17 @@ function MyRecipes() {
                             key={recipe.id}
                             className={`${columns} py-2.5 items-center border-t border-stone-100`}
                         >
-                            <div className="flex items-center gap-3 min-w-0">
+                            <Link
+                                to={`/recipes/${recipe.id}`}
+                                className="flex items-center gap-3 min-w-0 w-fit max-w-full rounded-[10px] transition-colors hover:text-orange-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300"
+                            >
                                 <RecipeThumb
                                     src={recipe.image}
                                     alt=""
                                     className="w-10 h-10 flex-none rounded-[9px]"
                                 />
                                 <span className="text-[15px] font-semibold truncate">{recipe.title}</span>
-                            </div>
+                            </Link>
 
                             <span className="text-sm text-stone-600">
                                 {ingredientCount === 0 ? '—' : ingredientCount}
